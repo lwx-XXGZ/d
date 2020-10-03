@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:web="http://java.sun.com/xml/ns//web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" version="3.0">
+  <display-name>SpringMVCjc</display-name>
+   <!-- 加载spring容器 -->
+   <context-param>
+ <param-name>contextConfigLocation</param-name>
+ <param-value>classpath:applicationContext.xml</param-value>
+ </context-param>
+ <listener>
+ <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+ </listener>
+  
+ <!-- 过滤器要配置在servlet之前 -->
+ <filter>
+ 	<filter-name>encodingFilter</filter-name>
+ 	<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+ 	<init-param>
+             <param-name>encoding</param-name>
+             <param-value>UTF-8</param-value>
+         </init-param>
+ </filter>
+ <filter-mapping>
+ 	<filter-name>encodingFilter</filter-name>
+ 	<url-pattern>/*</url-pattern>
+ </filter-mapping>
+ 
+ 
+  <!-- 配置Controller访问路径，也就是servlet的访问路径 -->
+  <servlet>
+  <!--中央控制器：tomcat一启动就加载  -->
+    <servlet-name>springmvc</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>  <!-- 改变servlet的启动级别,tomcat一加载就执行servlet ：设置大于0就立即加载-->
+  	
+  <!-- 	此操作为：tomcat程序一加载就执行springmvc-servlet.xml文件，而不是web.xml -->
+  	<init-param>
+  		<param-name>contextConfigLocation</param-name>
+  		<param-value>classpath:springmvc-servlet.xml</param-value>
+  	</init-param> 
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>springmvc</servlet-name>
+  	<url-pattern>/</url-pattern>    <!-- tm的来来去去搞了三四天 *代表所有请求 .action是要求访问路径要加action后缀 -->
+  </servlet-mapping>
+  
+</web-app> 

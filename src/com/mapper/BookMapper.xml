@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.BookMapper">
+
+	<resultMap type="Book" id="b">
+		<id column="bookid" property="bookid"/>
+		<result column="bookname" property="bookname"/>
+		<result column="status" property="status"/>
+		<result column="press" property="press"/>
+		<result column="username" property="username"/>
+		<result column="BorrowDate" property="borrowDate"/>
+	</resultMap>
+	<select id="findBook" resultMap="b">
+		select * from book 
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="bookName!=null and bookName.length()>0">
+				and bookName=#{bookName}
+			</if>
+			<if test="status!=null">
+				and status=#{status}
+			</if>
+		</trim>
+	</select>
+
+	<select id="findAll" resultMap="b">
+		selcet * from book
+	</select>
+	
+	<delete id="delectByIdBook">
+		delete from book where Bookid=#{Bookid}
+	</delete>
+	
+	<update id="updateBook">
+		update book <set>
+			bookName=#{bookName},press=#{press},status=#{status},
+			<if test="status!=0">
+				userName=#{userName},borrowDate=#{borrowDate}
+			</if>
+		</set>
+		where bookId=#{bookId}
+	</update>
+	
+	<select id="fenye" resultMap="b">
+		select * from book limit #{pageNo},#{pageSize}
+	</select>
+
+	<select id="count" resultType="int">
+		select count(1) from book
+	</select>
+
+</mapper>

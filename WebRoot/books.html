@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+       .lwx,.xxgz{
+       		display:inline-block;
+       		color:blue;
+       		text-decoration:underline;
+       		cursor: pointer;
+       }
+       .zzz{
+       	display: inline-block;
+       }
+</style>
+</head>
+<body>
+	<div class="zzz">
+	书籍名称 <input id="zx" type="text" name="name"/>
+	        <input type="hidden" name="pageNo" value="1">    
+   			<input type="hidden" name="pageSize" value="2">
+   			<input type="hidden" name="totl" />
+	</div>
+	
+	<div class="zzz">
+		书籍状态<select id="mn" name="static">
+			<option value="1">已借出</option>
+			<option value="0">未借出</option>
+	       </select>
+	</div>
+	<input id="ai" type="button" value="查询">
+	
+	<div>
+		<table>
+		<tr>
+			<th>书籍名称</th>
+			<th>出版社</th>
+			<th>出版状态</th>
+			<th>借出人</th>
+			<th>借出时间</th>
+			<th>操作</th>
+		</tr>
+	</table>	
+
+	<a href="javascript:;" name="first">首页</a>    <!-- href="javascript:;表示点击链接也会停留在本页面 -->
+    <a href="javascript:;" name="prev">上一页</a>
+    <a href="javascript:;" name="next">下一页</a>
+	<a href="javascript:;" name="end">末页</a>
+	
+	</div>
+
+	<div id="a">
+		<h2>图书修改</h2>
+		<form  action="BookServlet" method="post">
+		    <input type="hidden" name="bookId"/>
+			书籍名称<input type="text" name="bookName"/><br/>
+			借出状态<select id="jjx" name="zt">
+					<option value="0">未借出</option>
+					<option value="1">已借出</option>
+			      </select>
+			出版社<input type="text" name="cb"/>
+			<div id="cy">
+			借出时间<input type="text" name="time"/><br/>
+			借出人<input type="text" name="user"/><br/>
+			<input type="hidden" name="opr" value="update">
+			</div>
+			<input type="submit" value="保存" id="n"/> <input type="reset" value="重置"/>
+		</form>
+	</div>
+	
+</body>
+</html>
+<script src="Js/jquery-3.5.1.js"></script>
+<script src="Js/updateAnddelete.js" type="text/javascript"></script>
+<script src="Js/chaxun.js" type="text/javascript"></script>
+<script> 
+	
+  /* 写一个函数进行列表的查询	
+   */function change(pageNo){
+		 $.ajax({
+		    url:"fenye",
+			data:"pageNo="+pageNo+"&pageSize=3",
+			dataType:"json",
+			method:"post",
+			success:function(data){
+				var c=''
+				$("table").html("<tr><th>书籍名称</th><th>出版社</th><th>出版状态</th><th>借出人</th><th>借出时间</th><th>操作</th></tr>")
+				for(var i=0;i<data.length;i++){
+					if(data[i].status==0){
+						c="未借出"
+						data[i].username=""
+						data[i].borrowDate=""
+					}
+					if(data[i].status==1){
+						c="已借出"
+					}
+					
+					var $tr=$("<tr></tr>"); 
+					var $td1=$("<td>"+data[i].bookname+"</td>");
+					var $td2=$("<td>"+data[i].press+"</td>");
+					var $td3=$("<td>"+c+"</td>");
+					var $td4=$("<td>"+data[i].username+"</td>");
+					var $td5=$("<td>"+data[i].borrowDate+"</td>");
+					var xg=$("<p class='lwx'>修改</p>");
+					var sc=$("<p class='xxgz'>删除</p>");
+					var hidden=$("<input type='hidden' name='id' id='n' value="+data[i].bookid+">")
+					$tr.append($td1).append($td2).append($td3).append($td4).append($td5).append(xg).append(sc).append(hidden);
+					$("table").append($tr);
+				}
+			}
+			
+	  })
+}
+	
+  
+  //分页
+  jQuery(function(){
+	  $("#a").hide();    //程序加载进来将修改隐藏
+	  var pageNo=$("[name=pageNo]").val();   //获得当前pageNo的值
+	  if(pageNo==1){
+		 $("[name=first]").hide();
+		 $("[name=prev]").hide();
+	  } 
+ 	  change(pageNo);    //进来就拿到默认的page的值来进行显示
+ 	 
+	  //获得隐藏域的值
+	    var pegeSize=$("[name=pageSize]").val();
+	    $("[name=first]").click(function(){     //点击首页触发的事件
+	         $("[name=first]").hide();
+			 $("[name=prev]").hide();
+			 $("[name=next]").show();
+			 $("[name=end]").show();
+			 $("[name=pageNo]").val(1);         //给pageNo赋值为1
+			 change(1);                         //调用ajax方法
+		})
+		$("[name=prev]").click(function(){      //点击上一页触发的事件
+		    var a=$("[name=pageNo]").val(parseInt($("[name=pageNo]").val())-1);   //给当前页码减1
+			if(a-1==1){
+				$("[name=frist]").hide();
+				$("[name=prev]").hide();
+				$("[name=next]").show();
+				$("[name=end]").show();
+			}else{
+				$("[name=first]").show();
+				$("[name=prev]").show();
+				$("[name=next]").show();
+				$("[name=end]").show();
+			}
+			pageNo=$("[name=pageNo]").val(); 
+			change(pageNo);                          //调用执行ajax的方法接收值
+		})
+		$("[name=next]").click(function(){      //点击下一页
+			  $("[name=pageNo]").val(parseInt($("[name=pageNo]").val())+1);   //给当前页码加1
+			pageNo=$("[name=pageNo]").val();  
+			var pagecount=$('[name=totl]').val();
+			if(pageNo==pagecount){
+				$("[name=first]").show();
+				$("[name=prev]").show();
+				$("[name=next]").hide();
+				$("[name=end]").hide();
+			}else{
+				$("[name=first]").show();
+				$("[name=prev]").show();
+				$("[name=next]").show();
+				$("[name=end]").show();
+			}
+			change(pageNo);
+		})
+		
+		
+		$("[name=end]").click(function(){      //点击下一页
+			 $("[name=first]").show();
+			 $("[name=prev]").show();
+			 $("[name=next]").hide();
+			 $("[name=end]").hide();
+	  		var pagecount=$('[name=totl]').val();
+		    var pageSize=$("[name=pageSize]").val();
+	  		pageNo=$("[name=pageNo]").val(); 
+			$("[name=pageNo]").val(pagecount);   //给当前页码加1  
+			change(pagecount);
+			
+		})
+  })
+  		
+  
+ //获得总页数的ajax进行末页的查询
+ setTimeout(function(){
+	  $.ajax({
+			url:"count",
+			success:function(data){
+				$("[name=totl]").val(data)    //拿到总页数的值
+			}
+		  })
+	  
+		},300)
+	  
+ </script>
+
+

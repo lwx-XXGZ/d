@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.TeacherDao">
+        <insert id="add">
+			insert into teacher values(null,#{teaName},#{teaAge},#{createDate})
+		</insert>
+		
+        <select id="getAll" resultType="Teacher">    <!-- resultMap结果映射:值是描述映射的id值 -->
+			select * from teacher
+		</select>
+		
+		<select id="findTeacher" resultType="Teacher">
+		   select * from Teacher where teaId=#{teaId} 
+		</select>
+</mapper>
