@@ -17,6 +17,7 @@ public class BookServiceImpl implements BookService{
 	
 	@Override
 	public List<Book>  findBook(String BookName, int Status) {
+		System.out.println("zzxx");
 		return dao.findBook(BookName, Status);
 	}
 
